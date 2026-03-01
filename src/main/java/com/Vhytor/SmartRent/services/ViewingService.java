@@ -7,4 +7,5 @@ import java.util.Map;
 public interface ViewingService {
     // Contract: Give me a homeId and a User, I'll give you access details
     Map<String, Object> processViewingRequest(Long homeId, User user);
+    boolean validateAccessCode(Long homeId, String code);
 }

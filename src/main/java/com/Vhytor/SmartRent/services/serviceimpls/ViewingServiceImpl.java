@@ -48,6 +48,18 @@ public class ViewingServiceImpl implements ViewingService {
         return response;
     }
 
+    @Override
+    public boolean validateAccessCode(Long homeId, String code) {
+        // 1. Find the latest record for this home and code
+        // We'll need a custom method in ViewingRepository for this
+        return viewingRecordRepository.findByHomeHomeIdAndAccessCode(homeId, code)
+                .stream()
+                .anyMatch(record ->
+                        record.getIsPaid() &&
+                                record.getExpiryTime().isAfter(LocalDateTime.now())
+                );
+    }
+
     private void saveViewingRecord(User user, Home home, String accessCode) {
         ViewingRecord record = new ViewingRecord();
 
