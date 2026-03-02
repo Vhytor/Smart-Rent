@@ -6,6 +6,7 @@ import com.Vhytor.SmartRent.model.ViewingRecord;
 import com.Vhytor.SmartRent.repositories.HomeRepository;
 import com.Vhytor.SmartRent.repositories.ViewingRecordRepository;
 import com.Vhytor.SmartRent.services.ViewingService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ViewingServiceImpl implements ViewingService {
@@ -49,15 +51,26 @@ public class ViewingServiceImpl implements ViewingService {
     }
 
     @Override
+    @Transactional //Ensures the update is saved to MYSQL correctly
     public boolean validateAccessCode(Long homeId, String code) {
         // 1. Find the latest record for this home and code
         // We'll need a custom method in ViewingRepository for this
-        return viewingRecordRepository.findByHomeHomeIdAndAccessCode(homeId, code)
+        Optional<ViewingRecord> recordOpt = viewingRecordRepository.findByHomeHomeIdAndAccessCode(homeId, code)
                 .stream()
-                .anyMatch(record ->
-                        record.getIsPaid() &&
-                                record.getExpiryTime().isAfter(LocalDateTime.now())
-                );
+                .filter(r -> !r.isUsed() && r.getExpiryTime().isAfter(LocalDateTime.now()))
+                .findFirst();
+
+        if (recordOpt.isPresent()) {
+            ViewingRecord record = recordOpt.get();
+
+            // 2. Mark as used so it can't be used again
+            record.setUsed(true);
+            viewingRecordRepository.save(record);
+
+            return true;
+        }
+
+        return false;
     }
 
     private void saveViewingRecord(User user, Home home, String accessCode) {

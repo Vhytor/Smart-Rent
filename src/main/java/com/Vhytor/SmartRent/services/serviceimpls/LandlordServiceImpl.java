@@ -3,18 +3,37 @@ package com.Vhytor.SmartRent.services.serviceimpls;
 import com.Vhytor.SmartRent.model.Home;
 import com.Vhytor.SmartRent.model.User;
 import com.Vhytor.SmartRent.model.ViewingRecord;
+import com.Vhytor.SmartRent.repositories.HomeRepository;
+import com.Vhytor.SmartRent.repositories.ViewingRecordRepository;
 import com.Vhytor.SmartRent.services.LandlordService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class LandlordServiceImpl implements LandlordService {
+
+    private final HomeRepository homeRepository;
+    private final ViewingRecordRepository viewingRecordRepository;
+
+    public LandlordServiceImpl(HomeRepository homeRepository, ViewingRecordRepository viewingRecordRepository) {
+        this.homeRepository = homeRepository;
+        this.viewingRecordRepository = viewingRecordRepository;
+    }
     @Override
     public List<Home> getMyProperties(User landlord) {
-        return List.of();
+        // We'll need to add findByLandlord to HomeRepository
+        return homeRepository.findByLandlord(landlord);
     }
 
     @Override
     public List<ViewingRecord> getMyViewingRecords(long homeId, User landlord) {
-        return List.of();
+        Home home = homeRepository.findById(homeId)
+                .orElseThrow(() -> new RuntimeException("Property not found"));
+
+        if (!home.getLandlord().getUserId().equals(landlord.getUserId())) {
+            throw new RuntimeException("Unauthorized access to this property");
+        }
+        return viewingRecordRepository.findByHomeHomeId(homeId);
     }
 }

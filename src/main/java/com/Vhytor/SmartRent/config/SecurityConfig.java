@@ -27,6 +27,8 @@ public class SecurityConfig {
                     .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .authorizeHttpRequests(auth -> auth
                             .requestMatchers("/api/auth/**").permitAll() // Public
+                            // Only Landlords can access the dashboard
+                            .requestMatchers("/api/landlord/**").hasRole("LANDLORD")
                             .anyRequest().authenticated() // Protected
                     );
             http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

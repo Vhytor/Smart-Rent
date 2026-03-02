@@ -21,6 +21,7 @@ public class ViewingRecord {
 
     private String accessCode; // The unique code generated for this user
     private boolean isPaid;
+    private boolean isUsed = false; // New field to track
     private LocalDateTime expiryTime;
 
     public User getUser() { return user; }
@@ -35,6 +36,11 @@ public class ViewingRecord {
     public boolean getIsPaid() { return isPaid; }
     public void setIsPaid(boolean isPaid) { this.isPaid = isPaid; }
 
+    public boolean isUsed() { return isUsed; }
+    public void setUsed(boolean used) { isUsed = used; }
+
     public LocalDateTime getExpiryTime() { return expiryTime; }
     public void setExpiryTime(LocalDateTime expiryTime) { this.expiryTime = expiryTime; }
 }
+
+
