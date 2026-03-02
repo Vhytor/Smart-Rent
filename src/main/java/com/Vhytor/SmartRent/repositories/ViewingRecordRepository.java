@@ -12,4 +12,5 @@ import java.util.Optional;
 @Repository
 public interface ViewingRecordRepository extends JpaRepository<ViewingRecord, Long> {
     List<ViewingRecord> findByHomeHomeIdAndAccessCode(Long homeId, String code);
+    List<ViewingRecord> findByHomeHomeId(Long homeId);
 }

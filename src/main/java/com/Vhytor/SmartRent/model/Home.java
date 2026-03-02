@@ -18,6 +18,10 @@ public class Home {
     @Column(name = "home_id")
     private Long homeId;
 
+    @ManyToOne
+    @JoinColumn(name = "landlord_id", nullable = false)
+    private User landlord; // This connects the house to a specific Landlord
+
     private String address;
     private String description;
     private BigDecimal pricePerMonth;
@@ -28,6 +32,9 @@ public class Home {
     // Manual Getters and Setters
     public Long getHomeId() { return homeId; }
     public void setHomeId(Long homeId) { this.homeId = homeId; }
+
+    public User getLandlord() { return landlord; }
+    public void setLandlord(User landlord) { this.landlord = landlord; }
 
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
@@ -44,3 +51,8 @@ public class Home {
     public BigDecimal getPricePerMonth() { return pricePerMonth; }
     public void setPricePerMonth(BigDecimal pricePerMonth) { this.pricePerMonth = pricePerMonth; }
 }
+
+
+
+
+
