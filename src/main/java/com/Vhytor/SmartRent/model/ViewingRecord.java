@@ -24,6 +24,9 @@ public class ViewingRecord {
     private boolean isUsed = false; // New field to track
     private LocalDateTime expiryTime;
 
+    private String transactionReference;
+    private String status; // PENDING, SUCCESSFUL
+
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
 
