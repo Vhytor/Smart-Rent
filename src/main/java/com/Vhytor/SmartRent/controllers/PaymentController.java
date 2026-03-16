@@ -3,6 +3,7 @@ package com.Vhytor.SmartRent.controllers;
 import com.Vhytor.SmartRent.model.User;
 import com.Vhytor.SmartRent.repositories.UserRepository;
 import com.Vhytor.SmartRent.services.PaymentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

@@ -2,6 +2,7 @@ package com.Vhytor.SmartRent.services.serviceimpls;
 
 import com.Vhytor.SmartRent.model.User;
 import com.Vhytor.SmartRent.services.PaymentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -17,8 +18,8 @@ import java.util.Map;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
-    @Value("${paystack.secret.keys}")
-    private String paystackSecretKeys;
+    @Value("${paystack.secret.key}")
+    private String payStackSecretKeys;
 
     private final String PAYSTACK_INIT_URL = "https://api.paystack.co/transaction/initialize";
 
@@ -41,7 +42,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(paystackSecretKeys);
+        headers.setBearerAuth(payStackSecretKeys);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 

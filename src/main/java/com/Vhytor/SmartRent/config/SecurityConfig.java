@@ -1,6 +1,11 @@
 package com.Vhytor.SmartRent.config;
 
 import com.Vhytor.SmartRent.util.JwtFilter;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -27,6 +32,12 @@ public class SecurityConfig {
                     .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .authorizeHttpRequests(auth -> auth
                             .requestMatchers("/api/auth/**").permitAll() // Public
+                            // 1. Permit Swagger UI & API Docs (Public)
+                            .requestMatchers(
+                                    "/v3/api-docs/**",
+                                    "/swagger-ui/**",
+                                    "/swagger-ui.html"
+                            ).permitAll()
                             // Only Landlords can access the dashboard
                             .requestMatchers("/api/landlord/**").hasRole("LANDLORD")
                             .anyRequest().authenticated() // Protected
@@ -41,20 +52,26 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    /**
+     * Swagger/OpenAPI Configuration
+     * This adds the title to your doc and enables the JWT "Authorize" button.
+     */
+    @Bean
+    public OpenAPI smartRentOpenAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("SmartRent API")
+                        .description("Backend API for the Smart Home Rental Application")
+                        .version("v1.0.0"))
+                .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
+                .components(new Components().addSecuritySchemes("Bearer Authentication",
+                        new SecurityScheme()
+                                .name("Bearer Authentication")
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")));
+    }
 }
 
-
-
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf(csrf -> csrf.disable()) // Disable for testing APIs
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/api/auth/**").permitAll() // Anyone can register
-//                        .anyRequest().authenticated() // Everything else needs login
-//                )
-//                .httpBasic(Customizer.withDefaults()); // Simple login for now
-//
-//        return http.build();
-//    }
 
