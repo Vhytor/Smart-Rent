@@ -23,6 +23,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final String PAYSTACK_INIT_URL = "https://api.paystack.co/transaction/initialize";
 
+
     @Override
     public String initializeTransaction(User user, BigDecimal amount, Long homeId) {
         RestTemplate restTemplate = new RestTemplate();
