@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
-@Service
+
 public interface PaymentService {
     
     String initializeTransaction(User user, BigDecimal amount, Long homeId);

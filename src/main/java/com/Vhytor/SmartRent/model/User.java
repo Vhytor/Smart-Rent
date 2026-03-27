@@ -2,6 +2,7 @@ package com.Vhytor.SmartRent.model;
 
 import com.Vhytor.SmartRent.enums.Role;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;

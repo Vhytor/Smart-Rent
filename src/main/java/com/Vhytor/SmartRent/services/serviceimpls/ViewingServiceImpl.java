@@ -1,5 +1,7 @@
 package com.Vhytor.SmartRent.services.serviceimpls;
 
+import com.Vhytor.SmartRent.exceptions.InvalidAccessCodeException;
+import com.Vhytor.SmartRent.exceptions.PropertyNotFoundException;
 import com.Vhytor.SmartRent.model.Home;
 import com.Vhytor.SmartRent.model.User;
 import com.Vhytor.SmartRent.model.ViewingRecord;
@@ -7,10 +9,10 @@ import com.Vhytor.SmartRent.repositories.HomeRepository;
 import com.Vhytor.SmartRent.repositories.ViewingRecordRepository;
 import com.Vhytor.SmartRent.services.ViewingService;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +24,10 @@ public class ViewingServiceImpl implements ViewingService {
     private final HomeRepository homeRepository;
     private final ViewingRecordRepository viewingRecordRepository;
 
-    @Autowired
+    // SecureRandom is thread-safe and cryptographically strong
+    private static final SecureRandom secureRandom = new SecureRandom();
+
+
     public ViewingServiceImpl(HomeRepository homeRepository, ViewingRecordRepository viewingRecordRepository) {
         this.homeRepository = homeRepository;
         this.viewingRecordRepository = viewingRecordRepository;
@@ -31,11 +36,7 @@ public class ViewingServiceImpl implements ViewingService {
     @Override
     public Map<String, Object> processViewingRequest(Long homeId, User user) {
         Home home = homeRepository.findById(homeId)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
-
-        if (!simulatePayment(user, home.getViewingFee())) {
-            throw new RuntimeException("Payment failed");
-        }
+                .orElseThrow(() -> new PropertyNotFoundException(homeId));
 
         String accessCode = generateSecureCode();
 
@@ -60,18 +61,20 @@ public class ViewingServiceImpl implements ViewingService {
                 .filter(r -> !r.isUsed() && r.getExpiryTime().isAfter(LocalDateTime.now()))
                 .findFirst();
 
-        if (recordOpt.isPresent()) {
-            ViewingRecord record = recordOpt.get();
+        if (recordOpt.isEmpty()) {
+            throw new InvalidAccessCodeException();
 
-            // 2. Mark as used so it can't be used again
+        }
+        // 2. Mark as used so it can't be used again
+            ViewingRecord record = recordOpt.get();
             record.setUsed(true);
             viewingRecordRepository.save(record);
 
             return true;
         }
 
-        return false;
-    }
+//        return false;
+
 
     private void saveViewingRecord(User user, Home home, String accessCode) {
         ViewingRecord record = new ViewingRecord();
@@ -97,6 +100,10 @@ public class ViewingServiceImpl implements ViewingService {
     }
 
     private String generateSecureCode() {
-        return String.valueOf((int)((Math.random() * 8999) + 1000)); // 4-digit code
+        int code = 100000 + ViewingServiceImpl.secureRandom.nextInt(900000); // 6-digit: 100000–999999
+        return String.valueOf(code);
     }
 }
+
+
+

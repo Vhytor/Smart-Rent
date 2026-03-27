@@ -1,5 +1,7 @@
 package com.Vhytor.SmartRent.services.serviceimpls;
 
+import com.Vhytor.SmartRent.exceptions.PropertyNotFoundException;
+import com.Vhytor.SmartRent.exceptions.UnauthorizedAccessException;
 import com.Vhytor.SmartRent.model.Home;
 import com.Vhytor.SmartRent.model.User;
 import com.Vhytor.SmartRent.model.ViewingRecord;
@@ -29,10 +31,10 @@ public class LandlordServiceImpl implements LandlordService {
     @Override
     public List<ViewingRecord> getMyViewingRecords(long homeId, User landlord) {
         Home home = homeRepository.findById(homeId)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+                .orElseThrow(() -> new PropertyNotFoundException(homeId));
 
         if (!home.getLandlord().getUserId().equals(landlord.getUserId())) {
-            throw new RuntimeException("Unauthorized access to this property");
+            throw new UnauthorizedAccessException("You do not own this property" + homeId);
         }
         return viewingRecordRepository.findByHomeHomeId(homeId);
     }

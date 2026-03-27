@@ -1,5 +1,8 @@
 package com.Vhytor.SmartRent.services;
 
+import com.Vhytor.SmartRent.exceptions.InvalidCredentialsException;
+import com.Vhytor.SmartRent.exceptions.UserAlreadyExistsException;
+import com.Vhytor.SmartRent.exceptions.UserNotFoundException;
 import com.Vhytor.SmartRent.model.User;
 import com.Vhytor.SmartRent.repositories.UserRepository;
 import com.Vhytor.SmartRent.util.JwtService;
@@ -26,19 +29,22 @@ public class AuthService {
 
     public User register(User user) {
         // Encode password before saving
+        if (userRepository.findByUserEmail(user.getUserEmail()).isPresent()) {
+            throw new UserAlreadyExistsException(user.getUserEmail());
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
     public String login(String userEmail, String password) {
         User user = userRepository.findByUserEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(userEmail));
 
-        if (passwordEncoder.matches(password, user.getPassword())) {
-            return jwtService.generateToken(user.getUserEmail());
-        } else {
-            throw new RuntimeException("Invalid credentials");
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new InvalidCredentialsException();
+
         }
-    }
+        return jwtService.generateToken(user.getUserEmail());
 
+    }
 }
