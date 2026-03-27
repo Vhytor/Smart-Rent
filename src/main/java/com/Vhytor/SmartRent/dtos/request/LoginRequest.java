@@ -1,4 +1,4 @@
-package com.Vhytor.SmartRent.dtos;
+package com.Vhytor.SmartRent.dtos.request;
 
 public class LoginRequest {
 
