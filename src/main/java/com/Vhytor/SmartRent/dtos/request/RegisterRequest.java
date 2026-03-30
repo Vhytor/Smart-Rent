@@ -3,6 +3,7 @@ package com.Vhytor.SmartRent.dtos.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
 /**
  * DTO for user registration requests.
@@ -11,6 +12,7 @@ import jakarta.validation.constraints.Size;
  * server-side based on which endpoint is called.
  * This prevents clients from self-assigning the LANDLORD role.
  */
+
 public class RegisterRequest {
 
     @NotBlank(message = "Full name is required")

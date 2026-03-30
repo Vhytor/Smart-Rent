@@ -85,7 +85,8 @@ public class ViewingServiceImpl implements ViewingService {
 
         // Set the viewing data
         record.setAccessCode(accessCode);
-        record.setIsPaid(true);
+        record.setPaid(true);
+        record.setStatus("PENDING");
 
         // Set an expiration (e.g., the code is valid for 2 hours)
         record.setExpiryTime(LocalDateTime.now().plusHours(2));
@@ -94,10 +95,10 @@ public class ViewingServiceImpl implements ViewingService {
         viewingRecordRepository.save(record);
     }
 
-    private boolean simulatePayment(User user, BigDecimal amount) {
-        System.out.println("Processing debit for: " + user.getUserEmail() + " Amount: " + amount);
-        return true;
-    }
+//    private boolean simulatePayment(User user, BigDecimal amount) {
+//        System.out.println("Processing debit for: " + user.getUserEmail() + " Amount: " + amount);
+//        return true;
+//    }
 
     private String generateSecureCode() {
         int code = 100000 + ViewingServiceImpl.secureRandom.nextInt(900000); // 6-digit: 100000–999999
