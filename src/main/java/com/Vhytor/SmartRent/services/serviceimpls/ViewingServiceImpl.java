@@ -135,42 +135,13 @@ public class ViewingServiceImpl implements ViewingService {
         vr.setPaid(false);// always false casue not confirmed yet
         viewingRecordRepository.save(vr);
     }
-//    /**
-//     * Generates a cryptographically secure 6-digit access code.
-//     */
-//    private String generateSecureCode() {
-//        int code = 100000 + secureRandom.nextInt(900000);
-//        return String.valueOf(code);
-//    }
+    /**
+     * Generates a cryptographically secure 6-digit access code.
+     */
     private String generateSecureCode() {
         int code = 100000 + ViewingServiceImpl.secureRandom.nextInt(900000); // 6-digit: 100000–999999
         return String.valueOf(code);
     }
-
-
-//    private void saveViewingRecord(User user, Home home, String accessCode) {
-//        ViewingRecord record = new ViewingRecord();
-//
-//        // Set the relationships
-//        record.setUser(user);
-//        record.setHome(home);
-//
-//        // Set the viewing data
-//        record.setAccessCode(accessCode);
-//        record.setPaid(true);
-//        record.setStatus("PENDING");
-//
-//        // Set an expiration (e.g., the code is valid for 2 hours)
-//        record.setExpiryTime(LocalDateTime.now().plusHours(2));
-//
-//        // Save to MySQL
-//        viewingRecordRepository.save(record);
-//    }
-
-//    private boolean simulatePayment(User user, BigDecimal amount) {
-//        System.out.println("Processing debit for: " + user.getUserEmail() + " Amount: " + amount);
-//        return true;
-//    }
 
 
 }
