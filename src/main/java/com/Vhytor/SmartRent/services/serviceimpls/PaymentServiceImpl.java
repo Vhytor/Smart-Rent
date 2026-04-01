@@ -21,7 +21,7 @@ public class PaymentServiceImpl implements PaymentService {
     private String payStackSecretKeys;
 
     private final String PAYSTACK_INIT_URL = "https://api.paystack.co/transaction/initialize";
-    private final String PAYSTACK_VERIFY_URL = "https://api.paystack.co/transaction/verify";
+    private final String PAYSTACK_VERIFY_URL = "https://api.paystack.co/transaction/verify/";
 
     private final RestTemplate restTemplate;
 
@@ -30,7 +30,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public String initializeTransaction(User user, BigDecimal amount, Long homeId) {
+    public Map<String, String> initializeTransaction(User user, BigDecimal amount, Long homeId) {
         RestTemplate restTemplate = new RestTemplate();
 try {
     // ── DEBUG: Print key status (never print the full key in production) ──
@@ -73,7 +73,16 @@ try {
 
     // Extract the authorization_url to send to the user
     Map data = (Map) response.getBody().get("data");
-    return data.get("authorization_url").toString();
+
+    // Read both values directly from Paystack's response — never derive from URL
+    String authorizationUrl = data.get("authorization_url").toString();
+    String reference = data.get("reference").toString();
+
+    Map<String, String> result = new HashMap<>();
+    result.put("authorizationUrl", authorizationUrl);
+    result.put("reference", reference);
+    return result;
+
 
      }catch (HttpClientErrorException ex) {
     // 4xx from Paystack (e.g. 401 Unauthorized = bad API key)
@@ -103,27 +112,47 @@ try {
         // Implementation for Paystack verification endpoint
         // https://api.paystack.co/transaction/verify/:reference
         try {
-            String url = PAYSTACK_VERIFY_URL + "?reference=" + reference;
+            String url = PAYSTACK_VERIFY_URL + reference; //+ "?reference="
+            System.out.println("=== PAYSTACK VERIFY DEBUG ===");
+            System.out.println("Verifying reference: " + reference);
+            System.out.println("Calling URL: " + url);
 
             HttpEntity<Void> entity = new HttpEntity<>(buildHeaders());
 
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET,entity, Map.class);
 
+            System.out.println("Paystack verify status code: " + response.getStatusCode());
+            System.out.println("Paystack verify response body: " + response.getBody());
+
             if (response.getBody() == null) {
+                System.out.println("ERROR: Response body is null");
                 throw new PaymentInitializationException("Empty response from Paystack");
             }
 
             //Paystack returns :{"data": {"status": "success"}}
             Map data = (Map) response.getBody().get("data");
+            System.out.println("Data block: " + data);
+
+
             String status = data.get("status").toString();
+            System.out.println("Transaction status from Paystack: " + status);
+            System.out.println("=== END VERIFY DEBUG ===");
 
             if (!"success".equalsIgnoreCase(status)) {
+                System.out.println("Payment not successful. Status was: " + status);
                 throw new PaymentVerificationException(reference);
             }
 
             return true;
 
-        }catch (RestClientException ex){
+        }catch (HttpClientErrorException ex) {
+            System.out.println("=== VERIFY CLIENT ERROR ===");
+            System.out.println("Status: " + ex.getStatusCode());
+            System.out.println("Body: " + ex.getResponseBodyAsString());
+            throw new PaymentVerificationException(reference);
+        } catch (ResourceAccessException ex) {
+            System.out.println("=== VERIFY CONNECTION ERROR ===");
+            System.out.println("Cause: " + ex.getMessage());
             throw new PaymentVerificationException(reference);
         }
     }

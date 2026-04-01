@@ -43,11 +43,12 @@ public class ViewingServiceImpl implements ViewingService {
         Home home = homeRepository.findById(homeId)
                 .orElseThrow(() -> new PropertyNotFoundException(homeId));
 
-        String authorizationUrl = paymentService.initializeTransaction(user,home.getViewingFee(),homeId);
+        // Returns Map with "authorizationUrl" and "reference"
+        Map<String, String> paystackData = paymentService.initializeTransaction(
+                user, home.getViewingFee(), homeId);
 
-        // Extract the reference from the URL so we can store it
-        // Paystack authorization URLs look like: https://checkout.paystack.com/abc123ref
-        String reference = authorizationUrl.substring(authorizationUrl.lastIndexOf("/")+1);
+        String authorizationUrl = paystackData.get("authorizationUrl");
+        String reference = paystackData.get("reference"); // ← Real reference from Paystack
 
         savePendingViewingRecord(user, home, reference);
 
