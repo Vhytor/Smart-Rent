@@ -79,13 +79,6 @@ public class SecurityConfig {
                                 .bearerFormat("JWT")));
     }
 
-    @Bean
-    public RedisCacheConfiguration cacheConfiguration() {
-        return RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(60)) // Set TTL to 60 mins
-                .disableCachingNullValues()
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(RedisSerializer.json()));
-    }
 }
 
 

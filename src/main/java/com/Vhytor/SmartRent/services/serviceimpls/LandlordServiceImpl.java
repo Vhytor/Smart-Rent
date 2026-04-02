@@ -8,6 +8,7 @@ import com.Vhytor.SmartRent.model.ViewingRecord;
 import com.Vhytor.SmartRent.repositories.HomeRepository;
 import com.Vhytor.SmartRent.repositories.ViewingRecordRepository;
 import com.Vhytor.SmartRent.services.LandlordService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,12 +24,14 @@ public class LandlordServiceImpl implements LandlordService {
         this.viewingRecordRepository = viewingRecordRepository;
     }
     @Override
+    @Cacheable(value = "landlord-properties", key = "#landlord.userId")
     public List<Home> getMyProperties(User landlord) {
         // We'll need to add findByLandlord to HomeRepository
         return homeRepository.findByLandlord(landlord);
     }
 
     @Override
+    @Cacheable(value = "viewing-records", key = "#homeId")
     public List<ViewingRecord> getMyViewingRecords(long homeId, User landlord) {
         Home home = homeRepository.findById(homeId)
                 .orElseThrow(() -> new PropertyNotFoundException(homeId));
