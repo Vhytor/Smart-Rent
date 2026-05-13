@@ -1,6 +1,7 @@
 package com.Vhytor.SmartRent.services;
 
 import com.Vhytor.SmartRent.dtos.request.RegisterRequest;
+import com.Vhytor.SmartRent.dtos.response.LoginResponseDTO;
 import com.Vhytor.SmartRent.dtos.response.RegisterResponse;
 import com.Vhytor.SmartRent.enums.Role;
 import com.Vhytor.SmartRent.exceptions.InvalidCredentialsException;
@@ -73,7 +74,7 @@ public class AuthService {
     /**
      * Authenticates a user and returns a JWT token.
      */
-    public String login(String userEmail, String password) {
+    public LoginResponseDTO login(String userEmail, String password) {
         User user = userRepository.findByUserEmail(userEmail)
                 .orElseThrow(() -> new UserNotFoundException(userEmail));
 
@@ -81,7 +82,15 @@ public class AuthService {
             throw new InvalidCredentialsException();
 
         }
-        return jwtService.generateToken(user.getUserEmail());
+        String token = jwtService.generateToken(user.getUserEmail());
+
+        return new LoginResponseDTO(
+                token,
+                user.getUserId(),
+                user.getFullName(),
+                user.getUserEmail(),
+                user.getRole()
+        );
 
     }
 }

@@ -20,6 +20,9 @@ public class PaymentServiceImpl implements PaymentService {
     @Value("${paystack.secret.key}")
     private String payStackSecretKeys;
 
+    @Value("${app.frontend.url:http://localhost:5173}")
+    private String frontendUrl;
+
     private final String PAYSTACK_INIT_URL = "https://api.paystack.co/transaction/initialize";
     private final String PAYSTACK_VERIFY_URL = "https://api.paystack.co/transaction/verify/";
 
@@ -47,7 +50,8 @@ try {
     Map<String, Object> body = new HashMap<>();
     body.put("email", user.getUserEmail());
     body.put("amount", amountInKobo.toString());
-    body.put("callback_url", "http://localhost:8080/api/payments/verify");
+//    body.put("callback_url", "http://localhost:8080/api/payments/verify");
+    body.put("callback_url",frontendUrl + "/verify");
 
     // Metadata helps us link the payment back to the specific house
     Map<String, String> metadata = new HashMap<>();

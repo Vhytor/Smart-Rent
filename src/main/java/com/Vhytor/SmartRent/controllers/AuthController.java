@@ -2,6 +2,7 @@ package com.Vhytor.SmartRent.controllers;
 
 import com.Vhytor.SmartRent.dtos.request.LoginRequest;
 import com.Vhytor.SmartRent.dtos.request.RegisterRequest;
+import com.Vhytor.SmartRent.dtos.response.LoginResponseDTO;
 import com.Vhytor.SmartRent.dtos.response.RegisterResponse;
 import com.Vhytor.SmartRent.enums.Role;
 import com.Vhytor.SmartRent.model.User;
@@ -48,16 +49,20 @@ public class AuthController {
         RegisterResponse registerResponse = authService.registerLandlord(registerRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(registerResponse);
     }
+
     @PostMapping("/login")
-    public ResponseEntity<Map<String,String>> login(@RequestBody LoginRequest request) {
-        String token = authService.login(request.getUserEmail(), request.getPassword());
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody Map<String, String> credentials) {
 
-        Map<String,String> response = new HashMap<>();
-        response.put("token", token);
+        LoginResponseDTO loginResponseDTO = authService.login(
+                credentials.get("userEmail"),
+                credentials.get("password")
 
-        return ResponseEntity.ok(response);
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponseDTO);
+
+
+        // Login is usually handled by Spring Security internally
+        // or via a Custom JWT Filter.
     }
 
-    // Login is usually handled by Spring Security internally
-    // or via a Custom JWT Filter.
 }

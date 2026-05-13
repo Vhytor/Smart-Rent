@@ -1,10 +1,12 @@
 package com.Vhytor.SmartRent.controllers;
 
+import com.Vhytor.SmartRent.dtos.request.CreateHomeRequest;
 import com.Vhytor.SmartRent.model.Home;
 import com.Vhytor.SmartRent.model.User;
 import com.Vhytor.SmartRent.model.ViewingRecord;
 import com.Vhytor.SmartRent.repositories.UserRepository;
 import com.Vhytor.SmartRent.services.LandlordService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -36,6 +38,11 @@ public class LandlordController {
     public ResponseEntity<List<ViewingRecord>> getViewingHistory(@PathVariable Long homeId) {
         User landlord = getCurrentUser();
         return ResponseEntity.ok(landlordService.getMyViewingRecords(homeId, landlord));
+    }
+    @PostMapping("/properties")
+    public ResponseEntity<Home> createProperty(@Valid @RequestBody CreateHomeRequest request) {
+        User landlord = getCurrentUser();
+        return ResponseEntity.ok(landlordService.createProperty(request, landlord));
     }
 
     private User getCurrentUser() {

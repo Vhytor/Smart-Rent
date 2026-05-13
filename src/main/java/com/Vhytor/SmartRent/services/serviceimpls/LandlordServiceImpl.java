@@ -1,5 +1,6 @@
 package com.Vhytor.SmartRent.services.serviceimpls;
 
+import com.Vhytor.SmartRent.dtos.request.CreateHomeRequest;
 import com.Vhytor.SmartRent.exceptions.PropertyNotFoundException;
 import com.Vhytor.SmartRent.exceptions.UnauthorizedAccessException;
 import com.Vhytor.SmartRent.model.Home;
@@ -8,6 +9,7 @@ import com.Vhytor.SmartRent.model.ViewingRecord;
 import com.Vhytor.SmartRent.repositories.HomeRepository;
 import com.Vhytor.SmartRent.repositories.ViewingRecordRepository;
 import com.Vhytor.SmartRent.services.LandlordService;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -40,5 +42,19 @@ public class LandlordServiceImpl implements LandlordService {
             throw new UnauthorizedAccessException("You do not own this property" + homeId);
         }
         return viewingRecordRepository.findByHomeHomeId(homeId);
+    }
+
+    @Override
+    @CacheEvict(value = "landlord-properties", key = "#landlord.userId")
+    public Home createProperty(CreateHomeRequest request, User landlord) {
+        Home home = new Home();
+        home.setLandlord(landlord);
+        home.setAddress(request.getAddress());
+        home.setDescription(request.getDescription());
+        home.setPricePerMonth(request.getPricePerMonth());
+        home.setViewingFee(request.getViewingFee());
+        home.setLatitude(request.getLatitude());
+        home.setLongitude(request.getLongitude());
+        return homeRepository.save(home);
     }
 }
