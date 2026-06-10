@@ -35,3 +35,6 @@ build/
 ## Ignore sensitive config (if you use a separate local properties file)
 #local.properties
 docker-compose.yml
+
+.env
+.env.*

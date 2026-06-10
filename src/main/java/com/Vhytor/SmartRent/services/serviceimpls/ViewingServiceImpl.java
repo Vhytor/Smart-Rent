@@ -10,11 +10,10 @@ import com.Vhytor.SmartRent.repositories.HomeRepository;
 import com.Vhytor.SmartRent.repositories.ViewingRecordRepository;
 import com.Vhytor.SmartRent.services.PaymentService;
 import com.Vhytor.SmartRent.services.ViewingService;
-import jakarta.transaction.InvalidTransactionException;
+
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;

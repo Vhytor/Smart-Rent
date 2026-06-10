@@ -53,6 +53,12 @@ public class GlobalExceptionHandler {
             return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage(), request.getRequestURI());
         }
 
+        @ExceptionHandler(EmailNotVerifiedException.class)
+        public ResponseEntity<ApiErrorResponse> handleEmailNotVerified(
+                EmailNotVerifiedException ex, HttpServletRequest request) {
+            return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage(), request.getRequestURI());
+        }
+
         // ─── 400 Bad Request ──────────────────────────────────────────────────────
         @ExceptionHandler(InvalidAccessCodeException.class)
         public ResponseEntity<ApiErrorResponse> handleInvalidAccessCode(

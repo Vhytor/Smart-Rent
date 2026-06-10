@@ -1,0 +1,26 @@
+# Git
+.git
+.gitignore
+
+# Maven build output — Docker builds from source so target is not needed
+target/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# Environment files — never bake secrets into the image
+.env
+.env.*
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Frontend — backend Docker image doesn't need frontend files
+smartrent-frontend/

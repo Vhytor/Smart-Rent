@@ -27,6 +27,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role; // TENANT or LANDLORD
 
+    @Column(nullable = false)
+    private boolean verified = false;
+
+    // The 6-digit code sent to the user's email at registration
+    private String verificationCode;
+
     public User() {}
 
     public Long getUserId() { return userId; }
@@ -43,6 +49,12 @@ public class User {
 
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
+
+    public boolean isVerified() { return verified; }
+    public void setVerified(boolean verified) { this.verified = verified; }
+
+    public String getVerificationCode() { return verificationCode; }
+    public void setVerificationCode(String verificationCode) { this.verificationCode = verificationCode; }
 
 
 }
