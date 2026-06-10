@@ -2,13 +2,17 @@
 FROM maven:3.8.4-openjdk-17-slim AS build
 WORKDIR /app
 COPY pom.xml .
+RUN mvn dependency:go-offline -B
 COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Stage 2: Run the application
 FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
+RUN addgroup -S smartrent && adduser -S smartrent -G smartrent
 COPY --from=build /app/target/*.jar app.jar
+RUN chown smartrent:smartrent app.jar
+USER smartrent
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
